@@ -10,6 +10,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPainter>
+#include <QPainterPath>
 #include <QFontMetrics>
 #include <QPen>
 #include <QColor>
@@ -419,14 +420,12 @@ void InferenceThread::drawChineseTextAndBox(cv::Mat& img, const cv::Rect& box, c
     painter.drawRect(box.x, text_y - h - 12, w + 20, h + 12);
     
     painter.setBrush(Qt::NoBrush);
-    painter.setPen(QPen(Qt::black, 2));
+    painter.setPen(Qt::NoPen);
     const int text_x = box.x + 10;
     const int baseline_y = text_y - 7;
-    painter.drawText(text_x - 1, baseline_y, text);
-    painter.drawText(text_x + 1, baseline_y, text);
-    painter.drawText(text_x, baseline_y - 1, text);
-    painter.drawText(text_x, baseline_y + 1, text);
-    painter.drawText(text_x, baseline_y, text);
+    QPainterPath textPath;
+    textPath.addText(text_x, baseline_y, font, text);
+    painter.fillPath(textPath, Qt::black);
     painter.end();
     cv::cvtColor(rgb, img, cv::COLOR_RGB2BGR);
 }
