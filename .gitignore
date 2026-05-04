@@ -1,0 +1,54 @@
+# Build outputs
+/build/
+/output/
+/bin/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+CTestTestfile.cmake
+install_manifest.txt
+
+# Qt generated files
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.moc
+
+# Object files and binaries
+*.o
+*.obj
+*.a
+*.la
+*.lo
+*.exe
+*.dll
+*.dylib
+
+# Runtime output, logs, and dumps
+*.log
+*.pid
+*.out
+/core
+/core.*
+*.stackdump
+*.dmp
+
+# Local backups and temp files
+*.bak
+*.bak_*
+*~
+*.swp
+*.swo
+
+# Editor and OS files
+.vscode/
+.idea/
+.vs/
+.DS_Store
+Thumbs.db
+desktop.ini
