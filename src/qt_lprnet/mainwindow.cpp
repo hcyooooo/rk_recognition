@@ -1469,40 +1469,40 @@ void MainWindow::setupUI() {
     this->resize(1400, 820);
 
     this->setStyleSheet(
-        "QMainWindow { background: #101316; font-family: 'Segoe UI', 'Microsoft YaHei'; }"
+        "QMainWindow { background: #ffffff; font-family: 'Segoe UI', 'Microsoft YaHei'; }"
         "QFrame#DisplayPanel, QFrame#SidePanel, QFrame#StatusBar {"
-        "    background-color: #171b1f; border: 1px solid #2a3036; border-radius: 8px;"
+        "    background-color: #ffffff; border: none; border-radius: 0px;"
         "}"
         "QFrame#ResultCard, QFrame#InfoRow {"
-        "    background-color: #20252b; border: 1px solid #323a42; border-radius: 6px;"
+        "    background-color: #ffffff; border: 1px solid #d9d9d9; border-radius: 6px;"
         "}"
-        "QLabel { color: #e8ecef; }"
-        "QLabel#SectionLabel { font-size: 13px; font-weight: 700; color: #64d7d2; margin-top: 10px; }"
-        "QLabel#DisplayLabel { background-color: #0a0c0f; border: 1px solid #2d353d; border-radius: 6px; font-size: 18px; color: #81909a; }"
-        "QLabel#StatusLabel { color: #bdc7ce; font-size: 13px; font-weight: 600; padding-left: 8px; }"
-        "QLabel#PlateValue { color: #ffffff; font-size: 20px; font-weight: 800; padding: 4px 0; }"
-        "QLabel#PlateColorValue { color: #64d7d2; font-size: 15px; font-weight: 800; padding: 4px 0; }"
-        "QLabel#InfoKey { color: #8f9aa3; font-size: 12px; }"
-        "QLabel#InfoValue { color: #f0f3f5; font-size: 14px; font-weight: 700; }"
+        "QLabel { color: #000000; background-color: #ffffff; }"
+        "QLabel#SectionLabel { font-size: 13px; font-weight: 700; color: #000000; margin-top: 10px; }"
+        "QLabel#DisplayLabel { background-color: #ffffff; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 18px; color: #000000; }"
+        "QLabel#StatusLabel { color: #000000; font-size: 13px; font-weight: 600; padding-left: 8px; }"
+        "QLabel#PlateValue { color: #000000; font-size: 20px; font-weight: 800; padding: 4px 0; }"
+        "QLabel#PlateColorValue { color: #000000; font-size: 15px; font-weight: 800; padding: 4px 0; }"
+        "QLabel#InfoKey { color: #000000; font-size: 12px; }"
+        "QLabel#InfoValue { color: #000000; font-size: 14px; font-weight: 700; }"
         "QPushButton {"
         "    min-height: 42px; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;"
-        "    color: #f5f7f8; background-color: #283039; border: 1px solid #3a4651;"
+        "    color: #000000; background-color: #ffffff; border: 1px solid #d9d9d9;"
         "}"
-        "QPushButton:hover { background-color: #333d48; border-color: #4a5865; }"
-        "QPushButton:pressed { background-color: #20272e; }"
-        "QPushButton#PrimaryButton { background-color: #0e9f95; border-color: #17c5ba; color: #04100f; }"
-        "QPushButton#PrimaryButton:hover { background-color: #16bdb2; }"
-        "QPushButton#DangerButton { background-color: #4a2225; border-color: #7a343a; color: #ffdede; }"
-        "QPushButton#DangerButton:hover { background-color: #613036; }"
-        "QToolButton#EngineSelectButton { background-color: #11161b; color: #ffffff; border: 1px solid #3a4651; border-radius: 6px; padding: 8px 38px 8px 12px; font-size: 14px; font-weight: 700; text-align: left; min-height: 42px; }"
-        "QToolButton#EngineSelectButton:hover { border-color: #64d7d2; }"
-        "QToolButton#EngineSelectButton::menu-indicator { subcontrol-origin: padding; subcontrol-position: right center; right: 14px; width: 0px; height: 0px; image: none; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #9aa8b2; }"
-        "QMenuBar { background-color: #171b1f; color: #e8ecef; border-bottom: 1px solid #2a3036; font-size: 14px; font-weight: 700; }"
+        "QPushButton:hover { background-color: #f2f2f2; border-color: #bdbdbd; }"
+        "QPushButton:pressed { background-color: #e8e8e8; }"
+        "QPushButton#PrimaryButton { background-color: #ffffff; border-color: #bdbdbd; color: #000000; }"
+        "QPushButton#PrimaryButton:hover { background-color: #f2f2f2; }"
+        "QPushButton#DangerButton { background-color: #ffffff; border-color: #bdbdbd; color: #000000; }"
+        "QPushButton#DangerButton:hover { background-color: #f2f2f2; }"
+        "QToolButton#EngineSelectButton { background-color: #ffffff; color: #000000; border: 1px solid #d9d9d9; border-radius: 6px; padding: 8px 38px 8px 12px; font-size: 14px; font-weight: 700; text-align: left; min-height: 42px; }"
+        "QToolButton#EngineSelectButton:hover { border-color: #bdbdbd; }"
+        "QToolButton#EngineSelectButton::menu-indicator { subcontrol-origin: padding; subcontrol-position: right center; right: 14px; width: 0px; height: 0px; image: none; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #000000; }"
+        "QMenuBar { background-color: #ffffff; color: #000000; border-bottom: 1px solid #d9d9d9; font-size: 14px; font-weight: 700; }"
         "QMenuBar::item { padding: 8px 16px; background: transparent; }"
-        "QMenuBar::item:selected { background-color: #283039; color: #64d7d2; }"
-        "QMenu { background-color: #10151a; border: 1px solid #3a4651; border-radius: 6px; padding: 4px; }"
-        "QMenu::item { color: #f4f7f9; min-height: 36px; padding: 8px 14px; font-size: 14px; font-weight: 700; }"
-        "QMenu::item:selected { background-color: #0e9f95; color: #04100f; border-radius: 4px; }"
+        "QMenuBar::item:selected { background-color: #f2f2f2; color: #000000; }"
+        "QMenu { background-color: #ffffff; border: 1px solid #d9d9d9; border-radius: 6px; padding: 4px; }"
+        "QMenu::item { color: #000000; background-color: #ffffff; min-height: 36px; padding: 8px 14px; font-size: 14px; font-weight: 700; }"
+        "QMenu::item:selected { background-color: #f2f2f2; color: #000000; border-radius: 4px; }"
     );
 
     menuBar()->setNativeMenuBar(false);
@@ -1540,10 +1540,9 @@ void MainWindow::setupUI() {
 
     QFrame *displayFrame = new QFrame();
     displayFrame->setObjectName("DisplayPanel");
-    addGlassShadow(displayFrame);
     QVBoxLayout *displayLayout = new QVBoxLayout(displayFrame);
-    displayLayout->setContentsMargins(12, 12, 12, 12);
-    displayLayout->setSpacing(8);
+    displayLayout->setContentsMargins(0, 0, 0, 0);
+    displayLayout->setSpacing(0);
 
     displayLabel = new QLabel(QStringLiteral("\u7b49\u5f85\u8f93\u5165"));
     displayLabel->setObjectName("DisplayLabel");
@@ -1552,6 +1551,7 @@ void MainWindow::setupUI() {
     displayLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     displayLayout->addWidget(displayLabel, 1);
 
+#if 0
     QFrame *sidePanel = new QFrame();
     sidePanel->setObjectName("SidePanel");
     sidePanel->setFixedWidth(360);
@@ -1618,10 +1618,12 @@ void MainWindow::setupUI() {
     sideLayout->addWidget(makeInfoRow(QStringLiteral("\u8f93\u5165"), sourceValueLabel));
     sideLayout->addWidget(makeInfoRow(QStringLiteral("\u5f15\u64ce"), engineValueLabel));
     sideLayout->addStretch();
+#endif
 
     contentLayout->addWidget(displayFrame, 1);
-    contentLayout->addWidget(sidePanel);
+    // contentLayout->addWidget(sidePanel);
 
+#if 0
     QFrame *bottomBar = new QFrame();
     bottomBar->setObjectName("StatusBar");
     QHBoxLayout *bottomLayout = new QHBoxLayout(bottomBar);
@@ -1632,9 +1634,10 @@ void MainWindow::setupUI() {
     statusLabel->setObjectName("StatusLabel");
     bottomLayout->addWidget(statusKey);
     bottomLayout->addWidget(statusLabel, 1);
+#endif
 
     mainLayout->addLayout(contentLayout, 1);
-    mainLayout->addWidget(bottomBar);
+    // mainLayout->addWidget(bottomBar);
 
     setCentralWidget(centralWidget);
 }
@@ -1739,7 +1742,7 @@ void MainWindow::updateFrame(QImage image) {
 }
 
 void MainWindow::updateStatus(QString msg) { 
-    statusLabel->setText(msg); 
+    if (statusLabel) statusLabel->setText(msg);
 }
 
 void MainWindow::updateRecognition(QString plate, QString color, QString confidence) {
