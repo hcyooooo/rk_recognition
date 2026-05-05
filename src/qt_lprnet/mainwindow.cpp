@@ -406,7 +406,7 @@ void InferenceThread::drawChineseTextAndBox(cv::Mat& img, const cv::Rect& box, c
     painter.drawRect(box.x, box.y, box.width, box.height);
 
     QFont font("Microsoft YaHei");
-    font.setPixelSize(24);
+    font.setPixelSize(16);
     font.setBold(true);
     painter.setFont(font);
     QFontMetrics fm(font);
@@ -1465,7 +1465,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 MainWindow::~MainWindow() {}
 
 void MainWindow::setupUI() {
-    this->setWindowTitle(QStringLiteral("\u8f66\u724c\u8bc6\u522b\u7ec8\u7aef"));
+    this->setWindowTitle("license plate recognition");
     this->resize(1400, 820);
 
     this->setStyleSheet(
@@ -1515,7 +1515,7 @@ void MainWindow::setupUI() {
     connect(actionCameraInput, &QAction::triggered, this, &MainWindow::openCameraInput);
     connect(actionStopInput, &QAction::triggered, this, &MainWindow::stopInput);
 
-    engineMenu = menuBar()->addMenu(QStringLiteral("\u8bc6\u522b\u5f15\u64ce"));
+    engineMenu = menuBar()->addMenu(QStringLiteral("\u8bc6\u522b\u6a21\u578b"));
     QActionGroup *engineActionGroup = new QActionGroup(engineMenu);
     engineActionGroup->setExclusive(true);
     actionLprNet = engineMenu->addAction("LPRNet");
