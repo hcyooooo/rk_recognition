@@ -180,7 +180,7 @@ static void scrubPcieRoiMetadataPixels(std::vector<uint8_t>& frame565, bool meta
 }
 
 // =========================================================================
-// 🌟 核心白名单过滤逻辑：验证字符是否为合法车牌字符
+// ?? 核心白名单过滤逻辑：验证字符是否为合法车牌字符
 // =========================================================================
 static bool isValidPlateChar(const QString& str) {
     static const QStringList valid_provinces =
@@ -331,21 +331,65 @@ QImage InferenceThread::matToQImage(const cv::Mat& mat) {
 
 QString InferenceThread::detectPlateColor(const cv::Mat& plate_img) {
     if (plate_img.empty()) return "Unknown";
-    cv::Mat hsv, mask_b, mask_y, mask_g;
+    cv::Mat hsv, mask_b, mask_y, mask_g, mask_w, mask_black, mask_neutral_light, mask_dark;
     cv::cvtColor(plate_img, hsv, cv::COLOR_BGR2HSV);
     cv::inRange(hsv, cv::Scalar(100, 50, 50), cv::Scalar(124, 255, 255), mask_b);
     cv::inRange(hsv, cv::Scalar(15, 50, 50), cv::Scalar(34, 255, 255), mask_y);
-    cv::inRange(hsv, cv::Scalar(35, 50, 50), cv::Scalar(85, 255, 255), mask_g);
+    cv::inRange(hsv, cv::Scalar(35, 60, 50), cv::Scalar(85, 255, 255), mask_g);
+    cv::inRange(hsv, cv::Scalar(0, 0, 150), cv::Scalar(179, 65, 255), mask_w);
+    cv::inRange(hsv, cv::Scalar(0, 0, 0), cv::Scalar(179, 180, 85), mask_black);
+    cv::inRange(hsv, cv::Scalar(0, 0, 90), cv::Scalar(179, 75, 255), mask_neutral_light);
+    cv::inRange(hsv, cv::Scalar(0, 0, 0), cv::Scalar(179, 220, 100), mask_dark);
 
     int b_pts = cv::countNonZero(mask_b);
     int y_pts = cv::countNonZero(mask_y);
     int g_pts = cv::countNonZero(mask_g);
-    int max_pts = std::max({b_pts, y_pts, g_pts});
-    
-    if (max_pts < 50) return "Unknown";
-    if (max_pts == b_pts) return QStringLiteral("\u84dd\u8272");
-    if (max_pts == y_pts) return QStringLiteral("\u9ec4\u8272");
-    return QStringLiteral("\u7eff\u8272");
+    int w_pts = cv::countNonZero(mask_w);
+    int black_pts = cv::countNonZero(mask_black);
+    int neutral_light_pts = cv::countNonZero(mask_neutral_light);
+    int dark_pts = cv::countNonZero(mask_dark);
+    int chroma_max_pts = std::max({b_pts, y_pts, g_pts});
+    const double area = static_cast<double>(std::max(1, plate_img.cols * plate_img.rows));
+    const double chroma_ratio = chroma_max_pts / area;
+    const double white_ratio = w_pts / area;
+    const double black_ratio = black_pts / area;
+    const double neutral_light_ratio = neutral_light_pts / area;
+    const double dark_ratio = dark_pts / area;
+
+    if (neutral_light_ratio >= 0.45 && neutral_light_ratio >= chroma_ratio * 1.50) {
+        return QStringLiteral("\u767d\u8272");
+    }
+    if (dark_ratio >= 0.45 &&
+        dark_ratio >= neutral_light_ratio * 0.85 &&
+        chroma_ratio < 0.25) {
+        return QStringLiteral("\u9ed1\u8272");
+    }
+    if (chroma_max_pts >= 50 && chroma_ratio >= 0.08) {
+        if (chroma_max_pts == b_pts) return QStringLiteral("\u84dd\u8272");
+        if (chroma_max_pts == y_pts) return QStringLiteral("\u9ec4\u8272");
+        return QStringLiteral("\u7eff\u8272");
+    }
+    if (white_ratio >= 0.30 || neutral_light_ratio >= 0.40) return QStringLiteral("\u767d\u8272");
+    if (black_ratio >= 0.25 || dark_ratio >= 0.40) return QStringLiteral("\u9ed1\u8272");
+    return "Unknown";
+}
+
+static QString refinePlateColorByText(const QString& plate_text, const QString& detected_color) {
+    if (plate_text.contains(QStringLiteral("\u8b66"))) {
+        return QStringLiteral("\u767d\u8272");
+    }
+    if (plate_text.contains(QStringLiteral("\u4f7f")) ||
+        plate_text.contains(QStringLiteral("\u9886"))) {
+        return QStringLiteral("\u9ed1\u8272");
+    }
+    return detected_color;
+}
+
+static QString buildPlateLabelText(const QString& confidence_text,
+                                   const QString& plate_text,
+                                   const QString& plate_color) {
+    const QString refined_color = refinePlateColorByText(plate_text, plate_color);
+    return QString("[%1] %2 (%3)").arg(confidence_text).arg(plate_text).arg(refined_color);
 }
 
 QString InferenceThread::recognizeText(const cv::Mat& plate_img) {
@@ -847,7 +891,7 @@ void InferenceThread::processPCIeStream() {
     auto buildPlateLabel = [](const QString& confidence_text,
                               const QString& plate_text,
                               const QString& plate_color) -> QString {
-        return QString("[%1] %2 (%3)").arg(confidence_text).arg(plate_text).arg(plate_color);
+        return buildPlateLabelText(confidence_text, plate_text, plate_color);
     };
 
     auto runOcrJob = [this](OcrJob job) -> OcrResult {
@@ -899,6 +943,7 @@ void InferenceThread::processPCIeStream() {
 
         if (!isUsefulRecognitionText(result.plate_text)) result.plate_text = QStringLiteral("\u8bc6\u522b\u5931\u8d25");
         if (result.plate_color.isEmpty()) result.plate_color = job.fallback_color.isEmpty() ? "Unknown" : job.fallback_color;
+        result.plate_color = refinePlateColorByText(result.plate_text, result.plate_color);
         result.last_ocr_tick = cv::getTickCount();
         result.ocr_ms = (result.last_ocr_tick - ocr_tick0) * 1000.0 / cv::getTickFrequency();
         return result;
@@ -1031,6 +1076,7 @@ void InferenceThread::processPCIeStream() {
                 cv::Mat draw_frame = frame.clone();
                 QString plate_color = detectPlateColor(draw_frame);
                 QString plate_text = recognizeText(draw_frame);
+                plate_color = refinePlateColorByText(plate_text, plate_color);
 
                 cv::Scalar box_color = cv::Scalar(255, 255, 255); 
                 QString label_str = QStringLiteral("[\u5168\u56fe\u76f4\u51fa] %1 (%2)").arg(plate_text).arg(plate_color);
@@ -1174,6 +1220,7 @@ void InferenceThread::processPCIeStream() {
                     if (!isUsefulRecognitionText(plate_text)) {
                         plate_text = waiting_for_ocr ? QStringLiteral("\u8bc6\u522b\u4e2d") : QStringLiteral("\u8bc6\u522b\u5931\u8d25");
                     }
+                    plate_color = refinePlateColorByText(plate_text, plate_color);
                     if (plate_color.isEmpty()) {
                         plate_color = "Unknown";
                     }
@@ -1275,10 +1322,11 @@ void InferenceThread::processSingleImage() {
             cv::Mat plate_crop = frame(safe_box);
             QString plate_color = detectPlateColor(plate_crop);
             QString plate_text = recognizeText(plate_crop); 
+            plate_color = refinePlateColorByText(plate_text, plate_color);
 
             cv::Scalar box_color = cv::Scalar(255, 255, 255); 
             QString confidence_text = QString::number(obj.confidence, 'f', 2);
-            QString label_str = QString("[%1] %2 (%3)").arg(confidence_text).arg(plate_text).arg(plate_color);
+            QString label_str = buildPlateLabelText(confidence_text, plate_text, plate_color);
             emit recognitionReady(plate_text, plate_color, confidence_text);
             drawChineseTextAndBox(frame, safe_box, label_str, box_color);
         }
@@ -1287,6 +1335,7 @@ void InferenceThread::processSingleImage() {
     if (!plate_detected || !use_yolo) {
         QString plate_color = detectPlateColor(frame);
         QString plate_text = recognizeText(frame); 
+        plate_color = refinePlateColorByText(plate_text, plate_color);
         cv::Scalar box_color = cv::Scalar(255, 255, 255); 
         QString prefix = use_yolo ? QStringLiteral("[YOLO\u515c\u5e95]") : QStringLiteral("[\u76f4\u51fa]");
         QString label_str = QString("%1 %2 (%3)").arg(prefix).arg(plate_text).arg(plate_color);
@@ -1353,6 +1402,7 @@ void InferenceThread::processStream() {
                 cv::Mat draw_frame = frame.clone();
                 QString plate_color = detectPlateColor(draw_frame);
                 QString plate_text = recognizeText(draw_frame);
+                plate_color = refinePlateColorByText(plate_text, plate_color);
 
                 cv::Scalar box_color = cv::Scalar(255, 255, 255); 
                 QString label_str = QStringLiteral("[\u5168\u56fe\u76f4\u51fa] %1 (%2)").arg(plate_text).arg(plate_color);
@@ -1401,6 +1451,7 @@ void InferenceThread::processStream() {
                 if (!plate_detected) {
                     QString plate_color = detectPlateColor(draw_frame);
                     QString plate_text = recognizeText(draw_frame); 
+                    plate_color = refinePlateColorByText(plate_text, plate_color);
                     cv::Scalar box_color = cv::Scalar(255, 255, 255); 
                     QString label_str = QStringLiteral("[\u5168\u56fe\u515c\u5e95] %1 (%2)").arg(plate_text).arg(plate_color);
                     emit recognitionReady(plate_text, plate_color, "-");
@@ -1437,7 +1488,7 @@ void InferenceThread::processStream() {
 }
 
 // =========================================================================
-// 🌟 核心 UI 构建与交互逻辑 (Aurora Glassmorphism 极光毛玻璃拟态风)
+// ?? 核心 UI 构建与交互逻辑 (Aurora Glassmorphism 极光毛玻璃拟态风)
 // =========================================================================
 
 // 添加磨砂阴影的辅助函数
@@ -1748,7 +1799,7 @@ void MainWindow::updateStatus(QString msg) {
 void MainWindow::updateRecognition(QString plate, QString color, QString confidence) {
     Q_UNUSED(confidence);
     QString normalizedPlate = plate.trimmed();
-    QString normalizedColor = color.trimmed();
+    QString normalizedColor = refinePlateColorByText(normalizedPlate, color.trimmed());
     if (normalizedColor.isEmpty() ||
         normalizedColor.contains(QStringLiteral("\u5931\u8d25")) ||
         normalizedColor.contains(QStringLiteral("\u9519\u8bef")) ||
