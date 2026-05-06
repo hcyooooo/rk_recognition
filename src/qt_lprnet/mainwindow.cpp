@@ -1571,7 +1571,7 @@ void MainWindow::setupUI() {
     engineActionGroup->setExclusive(true);
     actionLprNet = engineMenu->addAction("LPRNet");
     actionPPOCR = engineMenu->addAction("PPOCRv4");
-    actionFusion = engineMenu->addAction(QStringLiteral("\u878d\u5408\u8bc6\u522b"));
+    actionFusion = engineMenu->addAction(QStringLiteral("\u534f\u540c\u8bc6\u522b"));
     for (QAction *action : { actionLprNet, actionPPOCR, actionFusion }) {
         action->setCheckable(true);
         engineActionGroup->addAction(action);
@@ -1710,7 +1710,7 @@ void MainWindow::selectPPOCR() {
 void MainWindow::selectFusion() {
     if (inferenceThread) inferenceThread->setRecognitionModel(MODEL_FUSION);
     if (actionFusion) actionFusion->setChecked(true);
-    if (engineValueLabel) engineValueLabel->setText(QStringLiteral("\u878d\u5408\u8bc6\u522b"));
+    if (engineValueLabel) engineValueLabel->setText(QStringLiteral("\u534f\u540c\u8bc6\u522b"));
     if (engineMenu) engineMenu->hide();
 }
 
