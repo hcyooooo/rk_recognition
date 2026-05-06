@@ -266,7 +266,7 @@ static void appendPlateVote(QStringList& votes, const QString& text, int weight 
 
 InferenceThread::InferenceThread(QObject *parent)
     : QThread(parent), keep_running(false), current_input_type(INPUT_IMAGE), 
-      use_yolo(true), current_rec_model(MODEL_LPRNET),
+      use_yolo(true), current_rec_model(MODEL_PPOCR),
       yolo11_detector(nullptr), yolo11_thread_pool(nullptr), 
       lprnet_ready(false), ppocr_ready(false) 
 {
@@ -1506,7 +1506,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     inferenceThread = new InferenceThread(this);
 
     inferenceThread->setUseYolo(true);
-    inferenceThread->setRecognitionModel(MODEL_LPRNET);
+    inferenceThread->setRecognitionModel(MODEL_PPOCR);
     
     connect(inferenceThread, &InferenceThread::frameReady, this, &MainWindow::updateFrame, Qt::QueuedConnection);
     connect(inferenceThread, &InferenceThread::showMessage, this, &MainWindow::updateStatus, Qt::QueuedConnection);
@@ -1576,7 +1576,7 @@ void MainWindow::setupUI() {
         action->setCheckable(true);
         engineActionGroup->addAction(action);
     }
-    actionLprNet->setChecked(true);
+    actionPPOCR->setChecked(true);
     connect(actionLprNet, &QAction::triggered, this, &MainWindow::selectLprNet);
     connect(actionPPOCR, &QAction::triggered, this, &MainWindow::selectPPOCR);
     connect(actionFusion, &QAction::triggered, this, &MainWindow::selectFusion);
@@ -1645,7 +1645,7 @@ void MainWindow::setupUI() {
     */
 
     sourceValueLabel = new QLabel(QStringLiteral("\u5f85\u673a"));
-    engineValueLabel = new QLabel("LPRNet");
+    engineValueLabel = new QLabel("PPOCRv4");
 
     auto makeInfoRow = [&](const QString& keyText, QLabel *valueLabel) -> QFrame* {
         QFrame *row = new QFrame();
